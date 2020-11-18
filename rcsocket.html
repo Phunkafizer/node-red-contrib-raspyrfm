@@ -1,0 +1,109 @@
+<script type="text/javascript">
+    RED.nodes.registerType('rcsocket', {
+        category: 'RaspyRFM',
+        color: '#c9269b',
+        paletteLabel: 'RC socket',
+        defaults: {
+            name: {value:"RC socket"},
+            server: {type:"rfmserver", required: true},
+            datatype: {value: "IT", required: true},
+            house: {value: "A", required: true},
+            unit: {value: "1", required: true},
+            channel: {value: "555", required: true},
+            codeon: {value: 5, required: true}
+        },
+        inputs: 1,
+        outputs: 0,
+        icon: "light.png",
+        label: function() {
+            return this.name || "RC socket";
+        },
+        oneditprepare: function() {
+            var node = this;
+            var setOptions = function() {
+                $(".dtopt").hide();
+                $(".dtopt select").empty();
+
+                $("#node-row-codeon").hide();
+
+                switch ($("#node-input-datatype").val()) {
+                    case "IT":
+                        for (var hc=65; hc<65+16; hc++) {
+                            var opt = String.fromCharCode(hc);
+                            $("#node-input-house").append($("<option>").val(opt).text(opt));
+                        }
+                        $('#node-input-house').val(node.house);
+                        $('#node-row-house').show();
+                        
+                        for (var unit=1; unit<=16; unit++) {
+                            var opt = String(unit);
+                            $("#node-input-unit").append($("<option>").val(opt).text(opt));
+                        }
+                        $("#node-input-unit").val(node.unit)
+                        $("#node-row-unit").show();
+                        break;
+
+                    case "BRENNENSTUHL":
+                        /*$("#node-input-channel")
+                            .append($("<option>").val("A").text("A"))
+                            .append($("<option>").val("B").text("B"))
+                            .append($("<option>").val("C").text("C"))
+                            .append($("<option>").val("D").text("D"))
+                        ;
+                        $("#node-row-channel").show();*/
+                        break;
+
+                    case "TRISTATE":
+                        $("#node-row-codeon").show();
+                        node.defaults.codeon.validate = RED.validators.number();
+                        break;
+                }
+            };
+
+            setOptions();
+
+            $("#node-input-datatype").change(setOptions);
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="rcsocket">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> RaspyRFM</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-protocol"><i class="fa fa-circle"></i> Type</label>
+        <select type="text" id="node-input-datatype">
+            <option value="TRISTATE">Tristate code</option>
+            <option value="IT">Intertechno</option>
+            <option value="BRENNENSTUHL">Brennenstuhl</option>
+        </select>
+    </div>
+
+    <div id="node-row-codeon" class="form-row">
+        <label for="node-input-codeon"><i class="fa fa-toggle-on"></i> Code ON</label>
+        <input type="text" id="node-input-codeon">
+    </div>
+    
+    <div id="node-row-channel" class="form-row dtopt">
+        <label for="node-input-channel"><i class="fa fa-bullseye"></i> Channel</label>
+        <select type="text" id="node-input-channel"></select>
+    </div>
+    <div id="node-row-house" class="form-row dtopt">
+        <label for="node-input-house"><i class="fa fa-home"></i> Housecode</label>
+        <select type="text" id="node-input-house"></select>
+    </div>
+    <div id="node-row-unit" class="form-row dtopt">
+        <label for="node-input-unit"><i class="fa fa-square"></i> Unit</label>
+        <select type="text" id="node-input-unit"></select>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="rcsocket">
+    <p>A node to control RC sockets using the RaspyRFM. </p>
+</script>

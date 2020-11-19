@@ -10,7 +10,9 @@
             house: {value: "A", required: true},
             unit: {value: "1", required: true},
             channel: {value: "555", required: true},
-            codeon: {value: 5, required: true}
+            codeon: {value: "", required: true},
+            codeoff: {value: "", required: true},
+            rcid: {value: 23477}
         },
         inputs: 1,
         outputs: 0,
@@ -23,8 +25,6 @@
             var setOptions = function() {
                 $(".dtopt").hide();
                 $(".dtopt select").empty();
-
-                $("#node-row-codeon").hide();
 
                 switch ($("#node-input-datatype").val()) {
                     case "IT":
@@ -57,11 +57,26 @@
                         $("#node-row-codeon").show();
                         node.defaults.codeon.validate = RED.validators.number();
                         break;
+
+                    case "IT32":
+                        $("#node-row-rcid").show();
+                        for (var unit=1; unit<=16; unit++) {
+                            var opt = String(unit);
+                            $("#node-input-unit").append($("<option>").val(opt).text(opt));
+                        }
+                        $("#node-input-unit").val(node.unit);
+                        $("#node-row-unit").show();
+                        node.defaults.id.validate = RED.validators.number();
+                        break;
+
+                    case "PDM32":
+                        $("#node-row-codeon").show();
+                        $("#node-row-codeoff").show();
+                        break;
+
                 }
             };
-
             setOptions();
-
             $("#node-input-datatype").change(setOptions);
         }
     });
@@ -82,14 +97,23 @@
             <option value="TRISTATE">Tristate code</option>
             <option value="IT">Intertechno</option>
             <option value="BRENNENSTUHL">Brennenstuhl</option>
+            <option value="IT32">Intertechno new</option>
+            <option value="PDM32">PDM32</option>
         </select>
     </div>
 
-    <div id="node-row-codeon" class="form-row">
+    <div id="node-row-codeon" class="form-row dtopt">
         <label for="node-input-codeon"><i class="fa fa-toggle-on"></i> Code ON</label>
         <input type="text" id="node-input-codeon">
     </div>
-    
+    <div id="node-row-codeoff" class="form-row dtopt">
+        <label for="node-input-codeoff"><i class="fa fa-toggle-on"></i> Code ON</label>
+        <input type="text" id="node-input-codeoff">
+    </div>
+    <div id="node-row-rcid" class="form-row dtopt">
+        <label for="node-input-rcid"><i class="fa fa-bullseye"></i> ID</label>
+        <input type="text" id="node-input-rcid"></select>
+    </div>
     <div id="node-row-channel" class="form-row dtopt">
         <label for="node-input-channel"><i class="fa fa-bullseye"></i> Channel</label>
         <select type="text" id="node-input-channel"></select>

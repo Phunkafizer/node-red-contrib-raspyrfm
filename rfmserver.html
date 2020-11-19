@@ -3,10 +3,10 @@
         category: 'config',
         defaults: {
             host: {value:"localhost",required:true},
-            port: {value:1985,required:true,validate:RED.validators.number()},
+            port: {value:1989,required:true,validate:RED.validators.number()},
         },
         label: function() {
-            return this.host+":"+this.port;
+            return this.host + ":" + this.port;
         }
     });
 </script>

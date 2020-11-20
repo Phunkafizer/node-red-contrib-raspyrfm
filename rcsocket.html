@@ -7,11 +7,11 @@
             name: {value:"RC socket"},
             server: {type:"rfmserver", required: true},
             datatype: {value: "IT", required: true},
-            house: {value: "A", required: true},
-            unit: {value: "1", required: true},
-            channel: {value: "555", required: true},
-            codeon: {value: "", required: true},
-            codeoff: {value: "", required: true},
+            house: {value: "A"},
+            unit: {value: "1"},
+            channel: {value: "555"},
+            codeon: {value: ""},
+            codeoff: {value: ""},
             rcid: {value: 23477}
         },
         inputs: 1,
@@ -60,13 +60,13 @@
 
                     case "IT32":
                         $("#node-row-rcid").show();
+
                         for (var unit=1; unit<=16; unit++) {
                             var opt = String(unit);
                             $("#node-input-unit").append($("<option>").val(opt).text(opt));
                         }
                         $("#node-input-unit").val(node.unit);
                         $("#node-row-unit").show();
-                        node.defaults.id.validate = RED.validators.number();
                         break;
 
                     case "PDM32":
@@ -74,6 +74,18 @@
                         $("#node-row-codeoff").show();
                         break;
 
+                    case "VOLTCRAFT":
+                        //node.defaults.rcid.required = true;
+                        //node.defaults.rcid.validate = RED.validators.number();
+                        for (var unit=1; unit<=4; unit++) {
+                            var opt = String(unit);
+                            $("#node-input-unit").append($("<option>").val(opt).text(opt));
+                        }
+                        $("#node-row-rcid").show();
+
+                        $("#node-input-unit").val(node.unit);
+                        $("#node-row-unit").show();
+                        break;
                 }
             };
             setOptions();
@@ -92,22 +104,23 @@
         <input type="text" id="node-input-server">
     </div>
     <div class="form-row">
-        <label for="node-input-protocol"><i class="fa fa-circle"></i> Type</label>
+        <label for="node-input-datatype"><i class="fa fa-circle"></i> Type</label>
         <select type="text" id="node-input-datatype">
             <option value="TRISTATE">Tristate code</option>
             <option value="IT">Intertechno</option>
             <option value="BRENNENSTUHL">Brennenstuhl</option>
-            <option value="IT32">Intertechno new</option>
+            <option value="IT32">Intertechno self learning</option>
             <option value="PDM32">PDM32</option>
+            <option value="VOLTCRAFT">Voltcraft</option>
         </select>
     </div>
 
     <div id="node-row-codeon" class="form-row dtopt">
-        <label for="node-input-codeon"><i class="fa fa-toggle-on"></i> Code ON</label>
+        <label for="node-input-codeon"><i class="fa fa-toggle-on"></i> Code on</label>
         <input type="text" id="node-input-codeon">
     </div>
     <div id="node-row-codeoff" class="form-row dtopt">
-        <label for="node-input-codeoff"><i class="fa fa-toggle-on"></i> Code ON</label>
+        <label for="node-input-codeoff"><i class="fa fa-toggle-off"></i> Code off</label>
         <input type="text" id="node-input-codeoff">
     </div>
     <div id="node-row-rcid" class="form-row dtopt">

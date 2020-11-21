@@ -41,6 +41,13 @@ module.exports = function(RED) {
                     payload.unit = parseInt(n.unit);
                     payload.state = msg.payload == "on" ? 2 : 0;
                     break;
+
+                case 'SWITCH15':
+                    payload.protocol = "switch15";
+                    payload.id = parseInt(n.rcid);
+                    payload.unit = parseInt(n.unit);
+                    payload.state = msg.payload == "on" ? 1 : 0;
+                    break;
             }
 
             node.server.socket.write(JSON.stringify(payload));

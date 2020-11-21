@@ -75,9 +75,18 @@
                         break;
 
                     case "VOLTCRAFT":
-                        //node.defaults.rcid.required = true;
-                        //node.defaults.rcid.validate = RED.validators.number();
                         for (var unit=1; unit<=4; unit++) {
+                            var opt = String(unit);
+                            $("#node-input-unit").append($("<option>").val(opt).text(opt));
+                        }
+                        $("#node-row-rcid").show();
+
+                        $("#node-input-unit").val(node.unit);
+                        $("#node-row-unit").show();
+                        break;
+
+                    case "SWITCH15":
+                    for (var unit=1; unit<=4; unit++) {
                             var opt = String(unit);
                             $("#node-input-unit").append($("<option>").val(opt).text(opt));
                         }
@@ -112,6 +121,7 @@
             <option value="IT32">Intertechno self learning</option>
             <option value="PDM32">PDM32</option>
             <option value="VOLTCRAFT">Voltcraft</option>
+            <option value="SWITCH15">Switch 15</option>
         </select>
     </div>
 

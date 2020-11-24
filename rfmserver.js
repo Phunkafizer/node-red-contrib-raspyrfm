@@ -7,7 +7,6 @@ module.exports = function(RED) {
         this.port = n.port;
         this.socket = new net.Socket();
         var node = this;
-        this.log("rfmserver create");
 
         this.clients = [];
         this.registerClient = function(client) {

@@ -7,12 +7,14 @@
             name: {value:"RC socket"},
             server: {type:"rfmserver", required: true},
             datatype: {value: "IT", required: true},
-            house: {value: "A"},
-            unit: {value: "1"},
+            house: {value: 'A'},
+            unit: {value: 1},
             channel: {value: "555"},
-            codeon: {value: ""},
-            codeoff: {value: ""},
-            rcid: {value: 23477}
+            code: {value: ""},
+            rcid: {value: 23477},
+            key: {value: 'A'},
+            state: {value: "on"},
+            dips: {value: []},
         },
         inputs: 1,
         outputs: 0,
@@ -41,21 +43,40 @@
                         }
                         $("#node-input-unit").val(node.unit)
                         $("#node-row-unit").show();
+
+                        $("#node-input-state")
+                            .append($("<option>").val("on").text("on"))
+                            .append($("<option>").val("off").text("off"));
+                        $("#node-input-state").val(node.state);
+                        $("#node-row-state").show();
                         break;
 
                     case "BRENNENSTUHL":
-                        /*$("#node-input-channel")
-                            .append($("<option>").val("A").text("A"))
-                            .append($("<option>").val("B").text("B"))
-                            .append($("<option>").val("C").text("C"))
-                            .append($("<option>").val("D").text("D"))
-                        ;
-                        $("#node-row-channel").show();*/
+                        $("#node-row-dips .button-group").each(function(index) {
+                            $("button", this).removeClass("selected");
+                            if (node.dips[index] === true)
+                                $("button", this).first().addClass("selected");
+                            else
+                                $("button", this).last().addClass("selected");
+                        });
+                        $("#node-row-dips").show();
+
+                        for (let unit of "1234") {
+                            $("#node-input-unit").append($("<option>").val(unit).text(unit));
+                        }
+                        $("#node-input-unit").val(node.unit);
+                        $("#node-row-unit").show();
+
+                        $("#node-input-state")
+                            .append($("<option>").val("on").text("on"))
+                            .append($("<option>").val("off").text("off"));
+                        $("#node-input-state").val(node.state);
+                        $("#node-row-state").show();
                         break;
 
                     case "TRISTATE":
-                        $("#node-row-codeon").show();
-                        node.defaults.codeon.validate = RED.validators.number();
+                        $("#node-row-code").show();
+                        $("#node-input-code").attr("placeholder", "000000000FFF");
                         break;
 
                     case "IT32":
@@ -67,38 +88,58 @@
                         }
                         $("#node-input-unit").val(node.unit);
                         $("#node-row-unit").show();
+
+                        $("#node-input-state")
+                            .append($("<option>").val("on").text("on"))
+                            .append($("<option>").val("off").text("off"));
+                        $("#node-row-state").show();
                         break;
 
                     case "PDM32":
-                        $("#node-row-codeon").show();
-                        $("#node-row-codeoff").show();
+                        $("#node-input-code").attr("placeholder", "01011101110011111110000111111111");
+                        $("#node-row-code").show();
                         break;
 
                     case "VOLTCRAFT":
-                        for (var unit=1; unit<=4; unit++) {
-                            var opt = String(unit);
-                            $("#node-input-unit").append($("<option>").val(opt).text(opt));
-                        }
                         $("#node-row-rcid").show();
 
+                        for (let unit of "1234")
+                            $("#node-input-unit").append($("<option>").val(unit).text(unit));
                         $("#node-input-unit").val(node.unit);
                         $("#node-row-unit").show();
                         break;
 
                     case "SWITCH15":
-                    for (var unit=1; unit<=4; unit++) {
-                            var opt = String(unit);
-                            $("#node-input-unit").append($("<option>").val(opt).text(opt));
+                        for (let unit of "1234") {
+                            $("#node-input-unit").append($("<option>").val(unit).text(unit));
                         }
                         $("#node-row-rcid").show();
 
                         $("#node-input-unit").val(node.unit);
                         $("#node-row-unit").show();
                         break;
+
+                    case "EMYLO":
+                        $("#node-row-rcid").show();
+
+                        for (let c of "ABCD")
+                            $("#node-input-key").append($("<option>").val(c).text(c));
+                        $("#node-input-key").val(node.key);
+                        $("#node-row-key").show();
+                        break;
                 }
             };
             setOptions();
             $("#node-input-datatype").change(setOptions);
+
+            $("#node-row-dips button").click(function() {
+                $("button", $(this).parent()).removeClass("selected");
+                $(this).addClass("selected");
+                node.dips = [];
+                $("#node-row-dips .button-group").each(function(index){
+                    node.dips.push($("button", this).first().hasClass("selected"));
+                });
+            });
         }
     });
 </script>
@@ -113,44 +154,104 @@
         <input type="text" id="node-input-server">
     </div>
     <div class="form-row">
-        <label for="node-input-datatype"><i class="fa fa-circle"></i> Type</label>
+        <label for="node-input-datatype"><i class="fa fa-cubes"></i> Type</label>
         <select type="text" id="node-input-datatype">
-            <option value="TRISTATE">Tristate code</option>
+            <option value="TRISTATE">Tristate</option>
             <option value="IT">Intertechno</option>
-            <option value="BRENNENSTUHL">Brennenstuhl</option>
+            <option value="BRENNENSTUHL">Brennenstuhl RCS1000</option>
             <option value="IT32">Intertechno self learning</option>
             <option value="PDM32">PDM32</option>
             <option value="VOLTCRAFT">Voltcraft</option>
             <option value="SWITCH15">Switch 15</option>
+            <option value="EMYLO">emylo</option>
         </select>
     </div>
 
-    <div id="node-row-codeon" class="form-row dtopt">
-        <label for="node-input-codeon"><i class="fa fa-toggle-on"></i> Code on</label>
-        <input type="text" id="node-input-codeon">
+    <div id="node-row-dips" class="form-row dtopt">
+        <label><i class="fa fa-microchip"></i> DIPs</label>
+        <span class="button-group">
+            <button type="button" class="red-ui-button toggle">1</button><button type="button" class="red-ui-button toggle">0</button>
+        </span>
+        <span class="button-group">
+            <button type="button" class="red-ui-button toggle">1</button><button type="button" class="red-ui-button toggle">0</button>
+        </span>
+        <span class="button-group">
+            <button type="button" class="red-ui-button toggle">1</button><button type="button" class="red-ui-button toggle">0</button>
+        </span>
+        <span class="button-group">
+            <button type="button" class="red-ui-button toggle">1</button><button type="button" class="red-ui-button toggle">0</button>
+        </span>
+        <span class="button-group">
+            <button type="button" class="red-ui-button toggle">1</button><button type="button" class="red-ui-button toggle">0</button>
+        </span>
     </div>
-    <div id="node-row-codeoff" class="form-row dtopt">
-        <label for="node-input-codeoff"><i class="fa fa-toggle-off"></i> Code off</label>
-        <input type="text" id="node-input-codeoff">
+
+    <div id="node-row-code" class="form-row dtopt">
+        <label for="node-input-code"><i class="fa fa-keyboard-o"></i> Code</label>
+        <input type="text" id="node-input-code">
     </div>
+
     <div id="node-row-rcid" class="form-row dtopt">
         <label for="node-input-rcid"><i class="fa fa-bullseye"></i> ID</label>
-        <input type="text" id="node-input-rcid"></select>
+        <input type="text" id="node-input-rcid" placeholder="47812"></select>
     </div>
+
     <div id="node-row-channel" class="form-row dtopt">
         <label for="node-input-channel"><i class="fa fa-bullseye"></i> Channel</label>
         <select type="text" id="node-input-channel"></select>
     </div>
+
     <div id="node-row-house" class="form-row dtopt">
         <label for="node-input-house"><i class="fa fa-home"></i> Housecode</label>
         <select type="text" id="node-input-house"></select>
     </div>
+
     <div id="node-row-unit" class="form-row dtopt">
         <label for="node-input-unit"><i class="fa fa-square"></i> Unit</label>
         <select type="text" id="node-input-unit"></select>
     </div>
+
+    <div id="node-row-key" class="form-row dtopt">
+        <label for="node-input-key"><i class="fa fa-square"></i> Key</label>
+        <select type="text" id="node-input-key"></select>
+    </div>
+
+    <div id="node-row-state" class="form-row dtopt">
+        <label for="node-input-state"><i class="fa fa-gamepad"></i> State</label>
+        <select type="text" id="node-input-state"></select>
+    </div>
 </script>
 
 <script type="text/html" data-help-name="rcsocket">
-    <p>A node to control RC sockets using the RaspyRFM. </p>
+    <p>Control RC sockets using the RaspyRFM. The nodes communicate via a TCP socket. On the raspberry PI run:</p>
+    <ul>
+        <li>
+            <code>./nrpulsesrv.py -m 1</code> when controlling RC sockets. Uses port 1989 by default
+            <code>./nrpulsesrv.py -m 1 -f 888.123</code> when controlling ELV FS20 components. Uses port 1989 by default
+            <code>./lacrossegw.py</code> when receiving lacrosse temperature sensors. Uses port 1990 by default
+        </li>
+    </ul>
+
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt class="optional">payload
+            <span class="property-type">object</span>
+        </dt>
+        <dd>Object to override node settings</dd>
+
+        <dt class="optional">payload.house
+            <span class="property-type">string</span>
+        </dt>
+        <dd>Set housecode. If not specified, node will use housecode configured in it's properties</dd>
+
+        <dt class="optional">payload.unit
+            <span class="property-type">number</span>
+        </dt>
+        <dd>Set unit. If not specified, node will use unit configured in it's properties</dd>
+
+        <dt class="optional">payload.state
+            <span class="property-type">string</span>
+        </dt>
+        <dd>Set to on or off</dd>
+    </dl>
 </script>

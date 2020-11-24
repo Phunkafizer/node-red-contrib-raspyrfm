@@ -11,28 +11,49 @@ module.exports = function(RED) {
         };
 
         this.on('input', function(msg) {
-            var payload = {
+            let payload = {
                 "action": "send"
-            }
+            };
+
+            if (typeof msg.payload === "object")
+                for (const [key, value] of Object.entries(msg.payload)) {
+                    n[key] = value;
+                }
 
             switch (n.datatype) {
                 case 'IT':
                     payload.protocol = "ittristate";
                     payload.house = n.house;
                     payload.unit = parseInt(n.unit);
-                    payload.state = msg.payload == "on" ? 1 : 0;
+                    payload.state = n.state == "on" ? 1 : 0;
+                    break;
+
+                case 'TRISTATE':
+                    payload.protocol = "ittristate";
+                    payload.code = n.code;
+                    break;
+
+                case 'BRENNENSTUHL':
+                    payload.protocol = "ittristate";
+                    payload.code = "";
+                    for (let i=0; i<5; i++)
+                        payload.code += n.dips[i] === true ? "0" : "f";
+                    for (let unit of "1234")
+                        payload.code += n.unit === unit ? "0" : "f";
+                    payload.code += "f";
+                    payload.code += n.state == "on" ? "0f" : "f0";
                     break;
 
                 case 'IT32':
                     payload.protocol = "it32";
                     payload.id = parseInt(n.rcid);
                     payload.unit = parseInt(n.unit);
-                    payload.state = msg.payload == "on" ? 1 : 0;
+                    payload.state = n.state == "on" ? 1 : 0;
                     break;
 
                 case 'PDM32':
                     payload.protocol = "pdm32";
-                    payload.code = msg.payload == "on" ? n.codeon : n.codeoff;
+                    payload.code = n.code
                     break;
 
                 case 'VOLTCRAFT':
@@ -47,6 +68,12 @@ module.exports = function(RED) {
                     payload.id = parseInt(n.rcid);
                     payload.unit = parseInt(n.unit);
                     payload.state = msg.payload == "on" ? 1 : 0;
+                    break;
+
+                case 'EMYLO':
+                    payload.protocol = "emylo";
+                    payload.id = parseInt(n.rcid);
+                    payload.key = n.key;
                     break;
             }
 

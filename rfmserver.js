@@ -34,6 +34,20 @@ module.exports = function(RED) {
             setClientsStatus({fill:"red",shape:"ring",text:"disconnected"});
         });
 
+        this.socket.on("data", function(data) {
+            try {
+                let obj = JSON.parse(data);
+                if (obj.decode)
+                    for (k in obj.decode) {
+                        node.clients.forEach(function(item, index) {
+                            item.rcreceive(obj.decode[k]);
+                        });
+                    }
+            }
+            catch (e) {
+            }
+        });
+
         this.socket.on('error', function(err) {
         });
 

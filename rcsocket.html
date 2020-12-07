@@ -1,4 +1,119 @@
 <script type="text/javascript">
+    var protocols = [
+        {
+            name: "tristate",
+            desc: "Tristate",
+            params: [
+                {name: 'code', placeholder: '0000F0F000FF'}
+            ]
+        },
+        {
+            name: "ittristate",
+            desc: "Intertechno tristate",
+            params: [
+                {name: 'house', options: Array.from({length: 16}, (_, i) => String.fromCharCode(i + 65))},
+                {name: 'group', options: Array.from({length: 4}, (_, i) => (i+1).toString())},
+                {name: 'unit', options: Array.from({length: 4}, (_, i) => (i+1).toString())},
+                {name: 'command', options: ["off", "on"]},
+            ]
+        },
+        {
+            name: "brennenstuhl",
+            desc: "Brennenstuhl RCS 1000 N",
+            params: [
+                {name: 'dips', placeholder: '00100'},
+                {name: 'unit', options: Array.from({length: 4}, (_, i) => (i+1).toString())},
+                {name: 'command', options: ["off", "on"]},
+            ]
+        },
+        {
+            name: "intertechno",
+            desc: "Intertechno",
+            params: [
+                {name: 'rcid', placeholder: '0..67108863'},
+                {name: 'unit', options: Array.from({length: 16}, (_, i) => (i+1).toString())},
+                {name: 'command', options: ["off", "on"]},
+            ]
+        },
+        {
+            name: "hama",
+            desc: "Hama 00121938",
+            params: [
+                {name: 'rcid', placeholder: '0..67108863'},
+                {name: 'unit', options: Array.from({length: 16}, (_, i) => (i+1).toString())},
+                {name: 'command', options: ["off", "on"]},
+            ]
+        },
+        {
+            name: "logilight",
+            desc: "Logilight EC000x",
+            params: [
+                {name: 'rcid', placeholder: '0..1048575'},
+                {name: 'unit', options: Array.from({length: 8}, (_, i) => (i+1).toString())},
+                {name: 'command', options: ["off", "on", "learn"]},
+            ]
+        },
+        {
+            name: "emylo",
+            desc: "Emylo",
+            params: [
+                {name: 'rcid', placeholder: '0..1048575'},
+                {name: 'command', options: ['A', 'B', 'C', 'D']},
+            ]
+        },
+        {
+            name: "fs20",
+            desc: "ELV FS20",
+            params: [
+                {name: 'rcid'},
+                {name: 'unit', options: Array.from({length: 15}, (_, i) => (i+1).toString())},
+                {name: 'command', options: [
+                    {value: 0, text: "0: off"},
+                    {value: 1, text: "1: on 6.25 %"},
+                    {value: 2, text: "2: on 12.5 %"},
+                    {value: 3, text: "3: on 18.75 %"},
+                    {value: 4, text: "4: on 25 %"},
+                    {value: 5, text: "5: on 31.25 %"},
+                    {value: 6, text: "6: on 37.5%"},
+                    {value: 7, text: "7: on 43.75%"},
+                    {value: 8, text: "8: on 50 %"},
+                    {value: 9, text: "9: on 56.25 %"},
+                    {value: 10, text: "10: on 62.5 %"},
+                    {value: 11, text: "11: on 68.75 %"},
+                    {value: 12, text: "12: on 75 %"},
+                    {value: 13, text: "13: on 81.25 %"},
+                    {value: 14, text: "14: on 87.5 %"},
+                    {value: 15, text: "15: on 93.75 %"},
+                    {value: 16, text: "16: on 100%"},
+                    {value: 17, text: "17: on last bright."},
+                    {value: 18, text: "18: toggle"},
+                    {value: 19, text: "19: dim up"},
+                    {value: 20, text: "20: dim down"},
+                    {value: 21, text: "21: dim up & down"},
+                ]},
+            ]
+        },
+        {
+            name: "voltcraft",
+            desc: "Voltcraft",
+            params: [
+                {name: 'rcid', placeholder: '0..4095'},
+                {name: 'unit', options: Array.from({length: 3}, (_, i) => (i+1).toString())},
+                {name: 'command', options: ["off", "on", "alloff", "allon", "dimup", "dimdown"]},
+            ]
+        },
+        {
+            name: "pilota",
+            desc: "Pilota RSL862T",
+            params: [
+                {name: 'rcid', placeholder: '0..65535'},
+                {name: 'group', options: Array.from({length: 4}, (_, i) => (i+1).toString())},
+                {name: 'unit', options: Array.from({length: 3}, (_, i) => (i+1).toString())},
+                {name: 'command', options: ["off", "on"]},
+            ]
+        },
+    ];
+
     RED.nodes.registerType('rcsocket', {
         category: 'RaspyRFM',
         color: '#c9269b',
@@ -6,51 +121,70 @@
         defaults: {
             name: {value:"RC socket"},
             server: {type:"rfmserver", required: true},
-            datatype: {value: "IT", required: true},
-            house: {value: 'A'},
-            unit: {value: 1},
-            channel: {value: "555"},
+            datatype: {value: "ittristate", required: true},
+            house: {value: "A"},
+            house_catchall: {value: false},
+            group: {value: "1"},
+            group_catchall: {value: false},
+            unit: {value: "1"},
+            unit_catchall: {value: false},
             code: {value: ""},
-            rcid: {value: 23477},
-            key: {value: 'A'},
-            state: {value: "on"},
+            code_catchall: {value: false},
+            rcid: {value: ""},
+            rcid_catchall: {value: false},
+            command: {value: "on"},
+            command_catchall: {value: false},
             dips: {value: []},
+            dips_catchall: {value: false},
         },
         inputs: 1,
-        outputs: 0,
-        icon: "light.png",
+        outputs: 1,
+        icon: "font-awesome/fa-plug",
         label: function() {
             return this.name || "RC socket";
         },
+        button: {
+            onclick: function() {
+                $.post("raspyrfm/"+this.id);
+            }
+        },
         oneditprepare: function() {
             var node = this;
+
+            $.each(protocols, function(pi, proto) {
+                $("#node-input-datatype").append(
+                    $("<option>").val(proto.name).text(proto.desc)
+                );
+            });
+            $("#node-input-datatype").val(node.datatype);
+
             var setOptions = function() {
-                $(".dtopt").hide();
-                $(".dtopt select").empty();
+                $(".form-row.dtopt").hide();
 
+                let proto = {};
+                $.each(protocols, function (i, val) {
+                    if ($("#node-input-datatype").val() == val.name) {
+                        proto = val;
+                        return true;
+                    }
+                });
+                $.each(proto.params, function(i, param) {
+                    if (param.options) {
+                        $('#node-input-' + param.name).empty();
+                        $.each(param.options, function(i, opt) {
+                            $('#node-input-' + param.name).append(
+                                $("<option>")
+                                    .val(typeof opt == "object" ? opt.value : opt)
+                                    .text(typeof opt == "object" ? opt.text : opt)
+                            );
+                        });
+                    }
+                    $("#node-input-" + param.name).attr("placeholder", param.placeholder);
+                    $("#node-input-" + param.name).val(node[param.name]);
+                    $('#node-row-' + param.name).show();
+                });
+                
                 switch ($("#node-input-datatype").val()) {
-                    case "IT":
-                        for (var hc=65; hc<65+16; hc++) {
-                            var opt = String.fromCharCode(hc);
-                            $("#node-input-house").append($("<option>").val(opt).text(opt));
-                        }
-                        $('#node-input-house').val(node.house);
-                        $('#node-row-house').show();
-                        
-                        for (var unit=1; unit<=16; unit++) {
-                            var opt = String(unit);
-                            $("#node-input-unit").append($("<option>").val(opt).text(opt));
-                        }
-                        $("#node-input-unit").val(node.unit)
-                        $("#node-row-unit").show();
-
-                        $("#node-input-state")
-                            .append($("<option>").val("on").text("on"))
-                            .append($("<option>").val("off").text("off"));
-                        $("#node-input-state").val(node.state);
-                        $("#node-row-state").show();
-                        break;
-
                     case "BRENNENSTUHL":
                         $("#node-row-dips .button-group").each(function(index) {
                             $("button", this).removeClass("selected");
@@ -68,30 +202,9 @@
                         $("#node-row-unit").show();
 
                         $("#node-input-state")
-                            .append($("<option>").val("on").text("on"))
-                            .append($("<option>").val("off").text("off"));
+                            .append($("<option>").val("1").text("on"))
+                            .append($("<option>").val("0").text("off"));
                         $("#node-input-state").val(node.state);
-                        $("#node-row-state").show();
-                        break;
-
-                    case "TRISTATE":
-                        $("#node-row-code").show();
-                        $("#node-input-code").attr("placeholder", "000000000FFF");
-                        break;
-
-                    case "IT32":
-                        $("#node-row-rcid").show();
-
-                        for (var unit=1; unit<=16; unit++) {
-                            var opt = String(unit);
-                            $("#node-input-unit").append($("<option>").val(opt).text(opt));
-                        }
-                        $("#node-input-unit").val(node.unit);
-                        $("#node-row-unit").show();
-
-                        $("#node-input-state")
-                            .append($("<option>").val("on").text("on"))
-                            .append($("<option>").val("off").text("off"));
                         $("#node-row-state").show();
                         break;
 
@@ -108,25 +221,6 @@
                         $("#node-input-unit").val(node.unit);
                         $("#node-row-unit").show();
                         break;
-
-                    case "SWITCH15":
-                        for (let unit of "1234") {
-                            $("#node-input-unit").append($("<option>").val(unit).text(unit));
-                        }
-                        $("#node-row-rcid").show();
-
-                        $("#node-input-unit").val(node.unit);
-                        $("#node-row-unit").show();
-                        break;
-
-                    case "EMYLO":
-                        $("#node-row-rcid").show();
-
-                        for (let c of "ABCD")
-                            $("#node-input-key").append($("<option>").val(c).text(c));
-                        $("#node-input-key").val(node.key);
-                        $("#node-row-key").show();
-                        break;
                 }
             };
             setOptions();
@@ -140,11 +234,25 @@
                     node.dips.push($("button", this).first().hasClass("selected"));
                 });
             });
+        },
+        oneditsave: function() {
+            console.log("option off");
+            console.log($("#dialog-form .dtopt:hidden input, #dialog-form .dtopt:hidden select"));
+            $("#dialog-form .dtopt:hidden select").append($("<option>")).val("");
+            $("#dialog-form .dtopt:hidden input").val("");
         }
     });
 </script>
 
 <script type="text/html" data-template-name="rcsocket">
+    <style>
+        .dtopt select[type="text"], .dtopt input[type="text"] {
+            width: 65%;
+        }
+        .dtopt input[type="checkbox"] {
+            width: 20px;
+        }
+    </style>
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -155,18 +263,8 @@
     </div>
     <div class="form-row">
         <label for="node-input-datatype"><i class="fa fa-cubes"></i> Type</label>
-        <select type="text" id="node-input-datatype">
-            <option value="TRISTATE">Tristate</option>
-            <option value="IT">Intertechno</option>
-            <option value="BRENNENSTUHL">Brennenstuhl RCS1000</option>
-            <option value="IT32">Intertechno self learning</option>
-            <option value="PDM32">PDM32</option>
-            <option value="VOLTCRAFT">Voltcraft</option>
-            <option value="SWITCH15">Switch 15</option>
-            <option value="EMYLO">emylo</option>
-        </select>
+        <select type="text" id="node-input-datatype"></select>
     </div>
-
     <div id="node-row-dips" class="form-row dtopt">
         <label><i class="fa fa-microchip"></i> DIPs</label>
         <span class="button-group">
@@ -189,47 +287,63 @@
     <div id="node-row-code" class="form-row dtopt">
         <label for="node-input-code"><i class="fa fa-keyboard-o"></i> Code</label>
         <input type="text" id="node-input-code">
+        <input type="checkbox" id="node-input-code_catchall"></select>
     </div>
 
     <div id="node-row-rcid" class="form-row dtopt">
         <label for="node-input-rcid"><i class="fa fa-bullseye"></i> ID</label>
-        <input type="text" id="node-input-rcid" placeholder="47812"></select>
-    </div>
-
-    <div id="node-row-channel" class="form-row dtopt">
-        <label for="node-input-channel"><i class="fa fa-bullseye"></i> Channel</label>
-        <select type="text" id="node-input-channel"></select>
+        <input type="text" id="node-input-rcid"></select>
+        <input type="checkbox" id="node-input-rcid_catchall"></select>
     </div>
 
     <div id="node-row-house" class="form-row dtopt">
         <label for="node-input-house"><i class="fa fa-home"></i> Housecode</label>
         <select type="text" id="node-input-house"></select>
+        <input type="checkbox" id="node-input-house_catchall"></select>
+    </div>
+
+    <div id="node-row-group" class="form-row dtopt">
+        <label for="node-input-group"><i class="fa fa-square"></i> Group</label>
+        <select type="text" id="node-input-group"></select>
+        <input type="checkbox" id="node-input-group_catchall"></select>
     </div>
 
     <div id="node-row-unit" class="form-row dtopt">
         <label for="node-input-unit"><i class="fa fa-square"></i> Unit</label>
         <select type="text" id="node-input-unit"></select>
+        <input type="checkbox" id="node-input-unit_catchall"></select>
     </div>
 
-    <div id="node-row-key" class="form-row dtopt">
-        <label for="node-input-key"><i class="fa fa-square"></i> Key</label>
-        <select type="text" id="node-input-key"></select>
+    <div id="node-row-command" class="form-row dtopt">
+        <label for="node-input-command"><i class="fa fa-gamepad"></i> Command</label>
+        <select type="text" id="node-input-command"></select>
+        <input type="checkbox" id="node-input-command_catchall"></select>
     </div>
 
-    <div id="node-row-state" class="form-row dtopt">
-        <label for="node-input-state"><i class="fa fa-gamepad"></i> State</label>
-        <select type="text" id="node-input-state"></select>
-    </div>
+    <div class="form-tips"><b>Tip:</b> Select checkbox to ignore parameter for receive (catch all).</div>
 </script>
 
 <script type="text/html" data-help-name="rcsocket">
-    <p>Control RC sockets using the RaspyRFM. The nodes communicate via a TCP socket. On the raspberry PI run:</p>
+    <p>Control RC sockets & receive remote controls using the RaspyRFM. The nodes communicate via a TCP socket. On the raspberry PI run:</p>
     <ul>
-        <li>
-            <code>./nrpulsesrv.py -m 1</code> when controlling RC sockets. Uses port 1989 by default
-            <code>./nrpulsesrv.py -m 1 -f 888.123</code> when controlling ELV FS20 components. Uses port 1989 by default
-            <code>./lacrossegw.py</code> when receiving lacrosse temperature sensors. Uses port 1990 by default
+        <li><code>./rcpulsegw.py </code> when controlling 434 MHz RC sockets. Uses port 1989 by default</li>
+        <li><code>./rcpulsegw.py -f 868.35</code> when controlling ELV FS20 components. Uses port 1989 by default</li>
+        <li><code>./lacrossegw.py</code> when receiving lacrosse temperature sensors. Uses port 1990 by default</li>
+    </ul>
+
+    <h3>Protocols &amp; brands</h3>
+    <ul>
+        <li>Intertechno tristate
+            <p>CMR-1000, CMR-1224, CMR-300, CMR-500</p>
         </li>
+        <li>Intertechno
+            <p>IT-1500, IT-2300, ITL-1000, ITL-210, ITL-250, ITL-3500, ITWR-3500</p>
+        </li>
+        <li>Hama</li>
+        <li>Logilight</li>
+        <li>Emylo</li>
+        <li>ELV FS-20</li>
+        <li>Voltcraft</li>
     </ul>
 
     <h3>Inputs</h3>

@@ -112,6 +112,13 @@
                 {name: 'command', options: ["off", "on"]},
             ]
         },
+        {
+            name: "revshutter",
+            desc: "Ritter REV shutter SA-MC08-N04-D",
+            params: [
+                {name: 'rcid', placeholder: '0..16777215'},
+            ]
+        },
     ];
 
     RED.nodes.registerType('rcpulse', {

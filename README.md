@@ -3,8 +3,8 @@
 ### RC pulse
 <img src="images/rcpulse-properties.png"
      alt="RC pulse properties"
-     style="float: left; margin-right: 300px;" />
-     Node for sending & receiving RC codes. Control RC sockets and receive buttons and sensors. Supports intertechno, logilight, brennenstuhl, emylo & many others
+     style="float: left; margin-right: 250px;" />
+Node for sending & receiving RC codes. Control RC sockets and receive buttons and sensors. Supports intertechno, logilight, brennenstuhl, emylo & many others
 All settings are configurable in node's properties. The settings can optionally be overridden using msg.payload as an object.
 
 ## Installation
@@ -19,6 +19,8 @@ All settings are configurable in node's properties. The settings can optionally 
 * Emylo sockets & remote controls
 * ELV FS20 sockets & remote controls
 * Voltcraft RC30 sockets & remote controls
+* REV Ritter SA-MC08-N04-D magnetic switch
+* Nexa MEST-1701 magnetic switch
 
 ## Operation
 On a raspberry PI, connect the [RaspyRFM] radio module, follow the installation instructions and run:

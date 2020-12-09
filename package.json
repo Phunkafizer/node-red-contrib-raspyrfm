@@ -22,7 +22,7 @@
   "node-red": {
     "nodes": {
       "rfmserver": "rfmserver.js",
-      "rcpulse": "rcsocket.js"
+      "rcpulse": "rcpulse.js"
     }
   }
 }

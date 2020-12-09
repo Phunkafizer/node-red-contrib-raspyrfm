@@ -50,7 +50,7 @@ module.exports = function(RED) {
         node.server.socket.write(JSON.stringify(payload));
     }
 
-    function RCSocketNode(n) {  
+    function RCPulseNode(n) {  
         RED.nodes.createNode(this, n);
         this.server = RED.nodes.getNode(n.server);
         this.config = n;
@@ -73,7 +73,6 @@ module.exports = function(RED) {
         });
 
         node.rcreceive = function(payload) {
-            //try {
             if (payload.protocol == node.config.datatype) {
                 if (payload.params.id) {
                     Object.defineProperty(payload.params, "rcid",
@@ -95,5 +94,5 @@ module.exports = function(RED) {
         node.server.registerClient(node);
     }
 
-    RED.nodes.registerType("rcsocket", RCSocketNode);
+    RED.nodes.registerType("rcpulse", RCPulseNode);
 }

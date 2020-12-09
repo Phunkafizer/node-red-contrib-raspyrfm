@@ -114,12 +114,12 @@
         },
     ];
 
-    RED.nodes.registerType('rcsocket', {
+    RED.nodes.registerType('rcpulse', {
         category: 'RaspyRFM',
         color: '#c9269b',
-        paletteLabel: 'RC socket',
+        paletteLabel: 'RC Pulse',
         defaults: {
-            name: {value:"RC socket"},
+            name: {value:"RC Pulse"},
             server: {type:"rfmserver", required: true},
             datatype: {value: "ittristate", required: true},
             house: {value: "A"},
@@ -141,7 +141,7 @@
         outputs: 1,
         icon: "font-awesome/fa-plug",
         label: function() {
-            return this.name || "RC socket";
+            return this.name || "RC Pulse";
         },
         button: {
             onclick: function() {
@@ -244,7 +244,7 @@
     });
 </script>
 
-<script type="text/html" data-template-name="rcsocket">
+<script type="text/html" data-template-name="rcpulse">
     <style>
         .dtopt select[type="text"], .dtopt input[type="text"] {
             width: 65%;
@@ -323,49 +323,51 @@
     <div class="form-tips"><b>Tip:</b> Select checkbox to ignore parameter for receive (catch all).</div>
 </script>
 
-<script type="text/html" data-help-name="rcsocket">
-    <p>Control RC sockets & receive remote controls using the RaspyRFM. The nodes communicate via a TCP socket. On the raspberry PI run:</p>
+<script type="text/html" data-help-name="rcpulse">
+    <p>Control RC sockets & receive remote controls using the RaspyRFM. The nodes communicate via a TCP socket with the RaspyRFM server. On the raspberry PI run the server with:</p>
     <ul>
         <li><code>./rcpulsegw.py </code> when controlling 434 MHz RC sockets. Uses port 1989 by default</li>
         <li><code>./rcpulsegw.py -f 868.35</code> when controlling ELV FS20 components. Uses port 1989 by default</li>
-        <li><code>./lacrossegw.py</code> when receiving lacrosse temperature sensors. Uses port 1990 by default</li>
-    </ul>
-
-    <h3>Protocols &amp; brands</h3>
-    <ul>
-        <li>Intertechno tristate
-            <p>CMR-1000, CMR-1224, CMR-300, CMR-500</p>
-        </li>
-        <li>Intertechno
-            <p>IT-1500, IT-2300, ITL-1000, ITL-210, ITL-250, ITL-3500, ITWR-3500</p>
-        </li>
-        <li>Hama</li>
-        <li>Logilight</li>
-        <li>Emylo</li>
-        <li>ELV FS-20</li>
-        <li>Voltcraft</li>
     </ul>
 
     <h3>Inputs</h3>
     <dl class="message-properties">
+        <p>When a member of payload is set, node will use the given value. Otherwise value is taken from node's property. Not all devices use all properties.</p>
         <dt class="optional">payload
             <span class="property-type">object</span>
         </dt>
-        <dd>Object to override node settings</dd>
+        <dd>Object to override node properties</dd>
+
+        <dt class="optional">payload.rcid
+            <span class="property-type">string</span>
+        </dt>
+        <dd>Set id of device.</dd>
 
         <dt class="optional">payload.house
             <span class="property-type">string</span>
         </dt>
-        <dd>Set housecode. If not specified, node will use housecode configured in it's properties</dd>
+        <dd>Set housecode.</dd>
 
-        <dt class="optional">payload.unit
-            <span class="property-type">number</span>
-        </dt>
-        <dd>Set unit. If not specified, node will use unit configured in it's properties</dd>
-
-        <dt class="optional">payload.state
+        <dt class="optional">payload.group
             <span class="property-type">string</span>
         </dt>
-        <dd>Set to on or off</dd>
+        <dd>Set groupid of device.</dd>
+
+        <dt class="optional">payload.unit
+            <span class="property-type">string</span>
+        </dt>
+        <dd>Set unit of device.</dd>
+
+        <dt class="optional">payload.command
+            <span class="property-type">string</span>
+        </dt>
+        <dd>Mostly set to 'on' or 'off'</dd>
+    </dl>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload
+            <span class="property-type">object</span>
+        </dt>
+        <dd>Properties of (received) RC data, e. g. unit, command, rcid...</dd>
     </dl>
 </script>

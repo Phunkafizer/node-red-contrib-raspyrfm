@@ -104,7 +104,7 @@
         },
         {
             name: "pilota",
-            desc: "Pilota RSL862T",
+            desc: "Pilota Casa RSL862T",
             params: [
                 {name: 'rcid', placeholder: '0..65535'},
                 {name: 'group', options: Array.from({length: 4}, (_, i) => (i+1).toString())},
@@ -206,20 +206,6 @@
                             .append($("<option>").val("0").text("off"));
                         $("#node-input-state").val(node.state);
                         $("#node-row-state").show();
-                        break;
-
-                    case "PDM32":
-                        $("#node-input-code").attr("placeholder", "01011101110011111110000111111111");
-                        $("#node-row-code").show();
-                        break;
-
-                    case "VOLTCRAFT":
-                        $("#node-row-rcid").show();
-
-                        for (let unit of "1234")
-                            $("#node-input-unit").append($("<option>").val(unit).text(unit));
-                        $("#node-input-unit").val(node.unit);
-                        $("#node-row-unit").show();
                         break;
                 }
             };

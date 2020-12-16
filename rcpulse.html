@@ -143,6 +143,8 @@
             command_catchall: {value: false},
             dips: {value: []},
             dips_catchall: {value: false},
+            payload: {value: 'payload',validate: (RED.validators.hasOwnProperty('typedInput')?RED.validators.typedInput('payloadType'):function(v) { return true})},
+            payloadType: { value: 'msg'},
         },
         inputs: 1,
         outputs: 1,
@@ -226,6 +228,12 @@
                 $("#node-row-dips .button-group").each(function(index){
                     node.dips.push($("button", this).first().hasClass("selected"));
                 });
+            });
+
+            $('#node-input-payload').typedInput({
+                default: 'msg',
+                typeField: $("#node-input-payloadType"),
+                types: ['msg', 'str','num','bool','json','bin','date','flow','global', 'env']
             });
         },
         oneditsave: function() {
@@ -312,8 +320,18 @@
         <select type="text" id="node-input-command"></select>
         <input type="checkbox" id="node-input-command_catchall"></select>
     </div>
-
     <div class="form-tips"><b>Tip:</b> Select checkbox to ignore parameter for receive (catch all).</div>
+
+    <div class="form-row">
+        <label style="width:auto" for="node-input-payload"><i class="fa fa-envelope-o"></i> On receive / inject, send:</label>
+    </div>
+    <div class="form-row">
+        <label for="node-input-payload" style="padding-left: 25px; margin-right: -25px">Payload</label>
+        <input type="text" id="node-input-payload" style="width:70%">
+        <input type="hidden" id="node-input-payloadType">
+    </div>
+
+    
 </script>
 
 <script type="text/html" data-help-name="rcpulse">
@@ -361,6 +379,6 @@
         <dt>payload
             <span class="property-type">object</span>
         </dt>
-        <dd>Properties of (received) RC data, e. g. unit, command, rcid...</dd>
+        <dd>Payload as configured. Can be (received) RC data, timestamp, fixed values, ...</dd>
     </dl>
 </script>

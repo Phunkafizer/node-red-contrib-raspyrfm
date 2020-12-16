@@ -2,6 +2,7 @@ var net = require('net');
 
 module.exports = function(RED) {
     function RfmServerNode(n) {
+        var buf = "";
         RED.nodes.createNode(this,n);
         this.host = n.host;
         this.port = n.port;
@@ -35,16 +36,24 @@ module.exports = function(RED) {
         });
 
         this.socket.on("data", function(data) {
-            try {
-                let obj = JSON.parse(data);
-                if (obj.decode)
-                    for (k in obj.decode) {
-                        node.clients.forEach(function(item, index) {
-                            item.rcreceive(obj.decode[k]);
-                        });
-                    }
-            }
-            catch (e) {
+            buf += data;
+            let np = buf.indexOf("\n");
+            if (np != -1) {
+                let s = buf.substr(0, np);
+                buf = buf.substr(np + 1);
+                
+                try {
+                    let obj = JSON.parse(data);
+
+                    if (obj.decode)
+                        for (k in obj.decode) {
+                            node.clients.forEach(function(item, index) {
+                                item.rcreceive(obj.decode[k]);
+                            });
+                        }
+                }
+                catch (e) {
+                }
             }
         });
 

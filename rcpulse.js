@@ -32,6 +32,12 @@ module.exports = function(RED) {
             protocol: node.config.datatype,
             payload: params
         };
+
+        if (node.config.payloadType === "date")
+            msg.payload = Date.now();
+        else
+            msg.payload = RED.util.evaluateNodeProperty(node.config.payload, node.config.payloadType, node, msg);
+        
         node.send(msg);
     }
 
@@ -47,7 +53,7 @@ module.exports = function(RED) {
                 Object.getOwnPropertyDescriptor(payload.params, "rcid"));
             delete payload.params["rcid"];
         }
-        node.server.socket.write(JSON.stringify(payload));
+        node.server.socket.write(JSON.stringify(payload) + '\n');
     }
 
     function RCPulseNode(n) {  
@@ -55,6 +61,23 @@ module.exports = function(RED) {
         this.server = RED.nodes.getNode(n.server);
         this.config = n;
         var node = this;
+
+        if (n.payloadType === 'flow' || n.payloadType === 'global') {
+            try {
+                var parts = RED.util.normalisePropertyExpression(n.payload);
+                if (parts.length === 0) {
+                    throw new Error();
+                }
+            }
+            catch(err) {
+                node.warn("Invalid payload property expression - defaulting to node id")
+                n.payload = node.id;
+                n.payloadType = 'str';
+            }
+        }
+        else {
+            n.payload = n.payload || node.id;
+        }
 
         node.setStatus = function(status) {
             node.status(status);

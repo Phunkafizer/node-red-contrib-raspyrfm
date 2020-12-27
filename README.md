@@ -4,8 +4,10 @@
 <img src="images/rcpulse-properties.png"
      alt="RC pulse properties"
      style="float: left; margin-right: 250px;" />
-Node for sending & receiving RC devices. Control RC sockets and receive buttons and sensors. Supports Intertechno, Logilight, Brennenstuhl, Emylo, Nexa, Telldus & many others
+Node for sending & receiving RC pulse devices. Control RC sockets and receive buttons and sensors. Supports Intertechno, Logilight, Brennenstuhl, Emylo, Nexa, Telldus & many others
 All settings are configurable in node's properties. The settings can optionally be overridden using msg.payload as an object.
+### RC Weather
+Node for receiving wireless temperature-/humiditysensors
 
 ## Installation
     npm install node-red-contrib-raspyrfm
@@ -21,6 +23,7 @@ All settings are configurable in node's properties. The settings can optionally 
 * Voltcraft RC30 sockets & remote controls
 * REV Ritter SA-MC08-N04-D magnetic switch
 * Nexa sockets, PIR sensors, contacts
+* Telldus sockets, contacts, PIR sensors
 
 ## Operation
 On a raspberry PI, connect the [RaspyRFM] radio module, follow the installation instructions and run:

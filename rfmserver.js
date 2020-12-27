@@ -53,6 +53,7 @@ module.exports = function(RED) {
                         }
                 }
                 catch (e) {
+                    node.log(e.message);
                 }
             }
         });
@@ -63,7 +64,7 @@ module.exports = function(RED) {
         this.socket.on('connect', function(err) {
             clearTimeout(node.timer);
             node.timer = 0;
-            setClientsStatus({fill:"green",shape:"ring",text:"connected"});
+            setClientsStatus({fill:"green",shape:"dot",text:"connected"});
         });
 
         this.socket.connect(node.port, node.host);

@@ -37,7 +37,7 @@ module.exports = function(RED) {
             msg.payload = Date.now();
         else
             msg.payload = RED.util.evaluateNodeProperty(node.config.payload, node.config.payloadType, node, msg);
-        
+
         node.send(msg);
     }
 
@@ -54,12 +54,20 @@ module.exports = function(RED) {
             delete payload.params["rcid"];
         }
         node.server.socket.write(JSON.stringify(payload) + '\n');
+
+        node.status({
+            fill: "blue", shape: "ring", text: node.st.text + " TX"
+        });
+        setTimeout(function() {
+            node.status(node.st);
+        }, 1000);
     }
 
     function RCPulseNode(n) {  
         RED.nodes.createNode(this, n);
         this.server = RED.nodes.getNode(n.server);
         this.config = n;
+        this.st = {};
         var node = this;
 
         if (n.payloadType === 'flow' || n.payloadType === 'global') {
@@ -80,6 +88,7 @@ module.exports = function(RED) {
         }
 
         node.setStatus = function(status) {
+            node.st = status;
             node.status(status);
         };
 
@@ -111,6 +120,12 @@ module.exports = function(RED) {
                     }
                 }
                 sendMessage(node, payload.params);
+                node.status({
+                    fill: "yellow", shape: "ring", text: node.st.text + " RX"
+                });
+                setTimeout(function() {
+                    node.status(node.st);
+                }, 1000);
             }
         };
 

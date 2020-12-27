@@ -141,7 +141,7 @@
             rcid_catchall: {value: false},
             command: {value: "on"},
             command_catchall: {value: false},
-            dips: {value: []},
+            dips: {value: ""},
             dips_catchall: {value: false},
             payload: {value: 'payload',validate: (RED.validators.hasOwnProperty('typedInput')?RED.validators.typedInput('payloadType'):function(v) { return true})},
             payloadType: { value: 'msg'},
@@ -192,42 +192,24 @@
                     $("#node-input-" + param.name).val(node[param.name]);
                     $('#node-row-' + param.name).show();
                 });
-                
-                switch ($("#node-input-datatype").val()) {
-                    case "BRENNENSTUHL":
-                        $("#node-row-dips .button-group").each(function(index) {
-                            $("button", this).removeClass("selected");
-                            if (node.dips[index] === true)
-                                $("button", this).first().addClass("selected");
-                            else
-                                $("button", this).last().addClass("selected");
-                        });
-                        $("#node-row-dips").show();
-
-                        for (let unit of "1234") {
-                            $("#node-input-unit").append($("<option>").val(unit).text(unit));
-                        }
-                        $("#node-input-unit").val(node.unit);
-                        $("#node-row-unit").show();
-
-                        $("#node-input-state")
-                            .append($("<option>").val("1").text("on"))
-                            .append($("<option>").val("0").text("off"));
-                        $("#node-input-state").val(node.state);
-                        $("#node-row-state").show();
-                        break;
-                }
             };
             setOptions();
             $("#node-input-datatype").change(setOptions);
 
+            $("#node-row-dips .button-group").each(function(index) {
+                if (node.dips[index] === '1')
+                    $("button", this).first().addClass("selected");
+                else
+                    $("button", this).last().addClass("selected");
+            });
             $("#node-row-dips button").click(function() {
                 $("button", $(this).parent()).removeClass("selected");
                 $(this).addClass("selected");
-                node.dips = [];
+                let di = ""
                 $("#node-row-dips .button-group").each(function(index){
-                    node.dips.push($("button", this).first().hasClass("selected"));
+                    di += $("button", this).first().hasClass("selected") ? '1' : '0';
                 });
+                $("#node-input-dips").val(di);
             });
 
             $('#node-input-payload').typedInput({
@@ -237,8 +219,6 @@
             });
         },
         oneditsave: function() {
-            console.log("option off");
-            console.log($("#dialog-form .dtopt:hidden input, #dialog-form .dtopt:hidden select"));
             $("#dialog-form .dtopt:hidden select").append($("<option>")).val("");
             $("#dialog-form .dtopt:hidden input").val("");
         }
@@ -283,6 +263,7 @@
         <span class="button-group">
             <button type="button" class="red-ui-button toggle">1</button><button type="button" class="red-ui-button toggle">0</button>
         </span>
+        <input type="hidden" id="node-input-dips">
     </div>
 
     <div id="node-row-code" class="form-row dtopt">

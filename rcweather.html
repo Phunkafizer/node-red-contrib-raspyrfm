@@ -1,0 +1,99 @@
+<script type="text/javascript">
+    RED.nodes.registerType('rcweather', {
+        category: 'RaspyRFM',
+        color: '#c9269b',
+        paletteLabel: 'RC Weather',
+        defaults: {
+            name: {value:"RC Weather"},
+            server: {type:"rfmserver", required: true},
+            datatype: {value: "wh7000", required: true},
+            rcid: {value: "C8"},
+            rcid_catchall: {value: false},
+            payload: {value: "object", required: true},
+        },
+        inputs: 0,
+        outputs: 1,
+        icon: "font-awesome/fa-plug",
+        label: function() {
+            return this.name || "RC Weather";
+        },
+        oneditprepare: function() {
+            let protocols = [
+                {
+                    name: "wh2",
+                    desc: "WH2"
+                },
+                {
+                    name: "ws7000",
+                    desc: "WS7000"
+                },
+                {
+                    name: "lacrosse",
+                    desc: "LaCrosse TX-35, TX-29"
+                }
+            ];
+            var node = this;
+
+            $.each(protocols, function(pi, proto) {
+                $("#node-input-datatype").append(
+                    $("<option>").val(proto.name).text(proto.desc)
+                );
+            });
+            $("#node-input-datatype").val(node.datatype);
+        },
+        oneditsave: function() {
+            
+        }
+    });
+</script>
+
+<script type="text/html" data-template-name="rcweather">
+    <style>
+        .dtopt select[type="text"], .dtopt input[type="text"] {
+            width: 65%;
+        }
+        .dtopt input[type="checkbox"] {
+            width: 20px;
+        }
+    </style>
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-server"><i class="fa fa-server"></i> RaspyRFM</label>
+        <input type="text" id="node-input-server">
+    </div>
+    <div class="form-row">
+        <label for="node-input-datatype"><i class="fa fa-cubes"></i> Type</label>
+        <select type="text" id="node-input-datatype"></select>
+    </div>
+    <div id="node-row-rcid" class="form-row dtopt">
+        <label for="node-input-rcid"><i class="fa fa-bullseye"></i> ID</label>
+        <input type="text" id="node-input-rcid"></select>
+        <input type="checkbox" id="node-input-rcid_catchall"></select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-payload"><i class="fa fa-envelope-o"></i> Type</label>
+        <select type="text" id="node-input-payload">
+            <option value="object">All measures</option>
+            <option value="T">Temperature / °C</option>
+            <option value="RH">Rel. humidity / %</option>
+        </select>
+    </div>
+</script>
+
+<script type="text/html" data-help-name="rcweather">
+    <p>Receive weathersensors (temperature/humidity). The nodes communicate via a TCP socket with the RaspyRFM server. On the raspberry PI run the server with:</p>
+    <ul>
+        <li><code>./rcpulsegw.py</code> when receiving 434 MHz RC sensors like WH2, WH7000. Uses port 1989 by default</li>
+        <li><code>./lacrossgw.py</code> when receiving 868 MHz LaCrosse sensors. Uses port 1990 by default</li>
+    </ul>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt>payload
+            <span class="property-type">object</span>
+        </dt>
+        <dd>Payload as configured. All values as object or single selected measurement</dd>
+    </dl>
+</script>

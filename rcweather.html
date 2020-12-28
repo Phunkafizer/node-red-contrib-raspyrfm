@@ -7,6 +7,7 @@
             name: {value:"RC Weather"},
             server: {type:"rfmserver", required: true},
             datatype: {value: "wh7000", required: true},
+            datatype_catchall: {value: false},
             rcid: {value: "C8"},
             rcid_catchall: {value: false},
             payload: {value: "object", required: true},
@@ -49,11 +50,17 @@
 
 <script type="text/html" data-template-name="rcweather">
     <style>
-        .dtopt select[type="text"], .dtopt input[type="text"] {
-            width: 65%;
-        }
-        .dtopt input[type="checkbox"] {
+        .form-row input[type="checkbox"] {
             width: 20px;
+            position: absolute;
+            top: 5px; 
+            right: 0; 
+        }
+        .form-row > div {
+            display: inline-block; 
+            position: relative; 
+            width: 70%; 
+            height: 20px;
         }
     </style>
     <div class="form-row">
@@ -66,15 +73,25 @@
     </div>
     <div class="form-row">
         <label for="node-input-datatype"><i class="fa fa-cubes"></i> Type</label>
-        <select type="text" id="node-input-datatype"></select>
+        <div>
+            <div style="position: absolute; left: 0; right: 40px;">
+                <select style="width: 100%;" type="text" id="node-input-datatype"></select>
+            </div>
+            <input type="checkbox" id="node-input-datatype_catchall"></select>
+        </div>
     </div>
     <div id="node-row-rcid" class="form-row dtopt">
         <label for="node-input-rcid"><i class="fa fa-bullseye"></i> ID</label>
-        <input type="text" id="node-input-rcid"></select>
-        <input type="checkbox" id="node-input-rcid_catchall"></select>
+        <div>
+            <div style="position: absolute; left: 0; right: 40px;">
+                <input style="width: 100%" type="text" id="node-input-rcid"></select>
+            </div>
+            <input type="checkbox" id="node-input-rcid_catchall"></select>
+        </div>
     </div>
+    <div class="form-tips"><b>Tip:</b> Select checkbox to ignore parameter for receive (catch all).</div>
     <div class="form-row">
-        <label for="node-input-payload"><i class="fa fa-envelope-o"></i> Type</label>
+        <label for="node-input-payload"><i class="fa fa-envelope-o"></i> Payload</label>
         <select type="text" id="node-input-payload">
             <option value="object">All measures</option>
             <option value="T">Temperature / °C</option>

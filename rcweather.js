@@ -16,7 +16,7 @@ module.exports = function(RED) {
         });
 
         node.rcreceive = function(payload) {
-            if (payload.protocol == node.config.datatype) {
+            if ( (payload.protocol == node.config.datatype) || ((payload.class == "weather") && node.config.datatype_catchall) ) {
                 if (payload.params.id) {
                     Object.defineProperty(payload.params, "rcid",
                         Object.getOwnPropertyDescriptor(payload.params, "id"));

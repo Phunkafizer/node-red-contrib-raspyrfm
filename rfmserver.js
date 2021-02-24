@@ -43,7 +43,7 @@ module.exports = function(RED) {
                 buf = buf.substr(np + 1);
                 
                 try {
-                    let obj = JSON.parse(data);
+                    let obj = JSON.parse(s);
 
                     if (obj.decode)
                         for (k in obj.decode) {

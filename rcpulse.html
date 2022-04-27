@@ -14,7 +14,7 @@
                 {name: 'house', options: Array.from({length: 16}, (_, i) => String.fromCharCode(i + 65))},
                 {name: 'group', options: Array.from({length: 4}, (_, i) => (i+1).toString())},
                 {name: 'unit', options: Array.from({length: 4}, (_, i) => (i+1).toString())},
-                {name: 'command', options: ["off", "on"]},
+                {name: 'command', options: ["off", "on"]}
             ]
         },
         {
@@ -32,7 +32,25 @@
             params: [
                 {name: 'rcid', placeholder: '0..67108863'},
                 {name: 'unit', options: Array.from({length: 16}, (_, i) => (i+1).toString())},
-                {name: 'command', options: ["off", "on"]},
+                {name: 'command', options: [
+                    "off",
+                    "on",
+                    {"value": "6", "text": "6 %"},
+                    {"value": "13", "text": "13 %"},
+                    {"value": "19", "text": "19 %"},
+                    {"value": "25", "text": "25 %"},
+                    {"value": "31", "text": "31 %"},
+                    {"value": "38", "text": "38 %"},
+                    {"value": "44", "text": "44 %"},
+                    {"value": "50", "text": "50 %"},
+                    {"value": "56", "text": "56 %"},
+                    {"value": "63", "text": "63 %"},
+                    {"value": "69", "text": "69 %"},
+                    {"value": "75", "text": "75 %"},
+                    {"value": "81", "text": "81 %"},
+                    {"value": "88", "text": "88 %"},
+                    {"value": "94", "text": "94 %"}
+                ]},
             ]
         },
         {

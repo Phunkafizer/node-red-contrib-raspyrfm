@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-raspyrfm",
-  "version": "1.6.1",
+  "version": "1.7.1",
   "description": "Support for RaspyRFM radio module",
   "homepage": "https://www.seegel-systeme.de/2015/09/02/ein-funkmodul-fuer-den-raspberry-raspyrfm/",
   "scripts": {
@@ -16,7 +16,15 @@
   "dependencies": {
     "net": "^1.0.2"
   },
-  "keywords": ["rfm69", "raspyrfm", "radio", "homeautomation", "rcsocket", "intertechno", "node-red"],
+  "keywords": [
+    "rfm69",
+    "raspyrfm",
+    "radio",
+    "homeautomation",
+    "rcsocket",
+    "intertechno",
+    "node-red"
+  ],
   "author": "Stefan Seegel",
   "license": "ISC",
   "node-red": {
